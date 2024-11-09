@@ -2,19 +2,25 @@ def calculate_probabilities(prevalence, sensitivity, specificity):
     p_disease = prevalence
     p_test_positive_given_disease = sensitivity
     p_test_negative_given_no_disease = specificity
-    p_no_disease = 1 - p_disease
+    p_no_disease = 1 - prevalence
 
     # Calculate the probability of a positive test result (P(Test+))
-    p_positive_test_result = (p_disease * p_test_positive_given_disease) + (p_no_disease * (1 - p_test_negative_given_no_disease))
-
+    p_positive_test_result = (prevalence * sensitivity) + (p_no_disease * (1 - specificity))
+    
     # Calculate the probability of having the disease given a positive test result (P(Disease|Test+))
-    p_disease_given_positive_test = (p_test_positive_given_disease * p_disease) / p_positive_test_result
+    if p_positive_test_result == 0:
+        p_disease_given_positive_test = 0.0  # Return 0 instead of NaN
+    else:
+        p_disease_given_positive_test = (sensitivity * prevalence) / p_positive_test_result
 
     # Calculate the probability of a negative test result (P(Test-))
-    p_negative_test_result = (p_disease * (1 - p_test_positive_given_disease)) + (p_no_disease * p_test_negative_given_no_disease)
+    p_negative_test_result = (prevalence * (1 - sensitivity)) + (p_no_disease * specificity)
 
     # Calculate the probability of having the disease given a negative test result (P(Disease|Test-))
-    p_disease_given_negative_test = ((1 - p_test_positive_given_disease) * p_disease) / p_negative_test_result
+    if p_negative_test_result == 0:
+        p_disease_given_negative_test = 0.0  # Return 0 instead of NaN
+    else:
+        p_disease_given_negative_test = ((1 - sensitivity) * prevalence) / p_negative_test_result
 
     return p_disease_given_positive_test, p_disease_given_negative_test
 
